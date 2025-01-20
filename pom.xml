@@ -99,6 +99,18 @@
   </dependencyManagement>
   <dependencies>
     <dependency>
+      <groupId>cglib</groupId>
+      <artifactId>cglib</artifactId>
+      <version>3.3.0</version>
+      <!-- This exclusion must remain as the group id changed. -->
+      <exclusions>
+        <exclusion>
+          <groupId>org.ow2.asm</groupId>
+          <artifactId>asm</artifactId>
+        </exclusion>
+      </exclusions>
+    </dependency>
+    <dependency>
       <groupId>com.fasterxml.jackson.core</groupId>
       <artifactId>jackson-core</artifactId>
     </dependency>
@@ -116,12 +128,6 @@
       <groupId>commons-beanutils</groupId>
       <artifactId>commons-beanutils</artifactId>
       <version>1.10.0</version>
-      <exclusions>
-        <exclusion>
-          <groupId>commons-logging</groupId>
-          <artifactId>commons-logging</artifactId>
-        </exclusion>
-      </exclusions>
     </dependency>
     <dependency>
       <groupId>commons-logging</groupId>
@@ -136,36 +142,12 @@
     <dependency>
       <groupId>net.revelc.code.formatter</groupId>
       <artifactId>jsdt-core</artifactId>
-      <version>3.4.4</version>
-      <exclusions>
-        <exclusion>
-          <groupId>com.google.guava</groupId>
-          <artifactId>guava</artifactId>
-        </exclusion>
-        <exclusion>
-          <groupId>org.osgi</groupId>
-          <artifactId>org.osgi.util.function</artifactId>
-        </exclusion>
-        <exclusion>
-          <groupId>org.osgi</groupId>
-          <artifactId>osgi.annotation</artifactId>
-        </exclusion>
-        <exclusion>
-          <groupId>org.slf4j</groupId>
-          <artifactId>slf4j-api</artifactId>
-        </exclusion>
-      </exclusions>
+      <version>3.5.0</version>
     </dependency>
     <dependency>
       <groupId>net.revelc.code.formatter</groupId>
       <artifactId>xml-formatter</artifactId>
       <version>0.4.0</version>
-      <exclusions>
-        <exclusion>
-          <groupId>org.slf4j</groupId>
-          <artifactId>slf4j-api</artifactId>
-        </exclusion>
-      </exclusions>
     </dependency>
     <dependency>
       <groupId>net.sourceforge.cssparser</groupId>
@@ -176,32 +158,11 @@
       <groupId>org.apache.commons</groupId>
       <artifactId>commons-digester3</artifactId>
       <version>3.2</version>
-      <exclusions>
-        <exclusion>
-          <groupId>commons-beanutils</groupId>
-          <artifactId>commons-beanutils</artifactId>
-        </exclusion>
-        <exclusion>
-          <groupId>commons-logging</groupId>
-          <artifactId>commons-logging</artifactId>
-        </exclusion>
-      </exclusions>
-    </dependency>
-    <dependency>
-      <groupId>org.apache.commons</groupId>
-      <artifactId>commons-lang3</artifactId>
-      <version>3.17.0</version>
     </dependency>
     <dependency>
       <groupId>org.codehaus.plexus</groupId>
       <artifactId>plexus-resources</artifactId>
       <version>1.3.0</version>
-      <exclusions>
-        <exclusion>
-          <groupId>org.codehaus.plexus</groupId>
-          <artifactId>plexus-utils</artifactId>
-        </exclusion>
-      </exclusions>
     </dependency>
     <dependency>
       <groupId>org.codehaus.plexus</groupId>
@@ -211,7 +172,7 @@
     <dependency>
       <groupId>org.eclipse.jdt</groupId>
       <artifactId>org.eclipse.jdt.core</artifactId>
-      <version>3.38.0</version>
+      <version>3.40.0</version>
     </dependency>
     <dependency>
       <groupId>org.jsoup</groupId>
@@ -221,20 +182,13 @@
     <dependency>
       <!-- converge dependency with jsdt-core -->
       <groupId>org.osgi</groupId>
-      <artifactId>org.osgi.util.function</artifactId>
-      <version>1.2.0</version>
-      <exclusions>
-        <exclusion>
-          <groupId>org.osgi</groupId>
-          <artifactId>osgi.annotation</artifactId>
-        </exclusion>
-      </exclusions>
-    </dependency>
-    <dependency>
-      <!-- converge dependency with jsdt-core -->
-      <groupId>org.osgi</groupId>
       <artifactId>osgi.annotation</artifactId>
       <version>8.1.0</version>
+    </dependency>
+    <dependency>
+      <groupId>org.ow2.asm</groupId>
+      <artifactId>asm</artifactId>
+      <version>9.7.1</version>
     </dependency>
     <dependency>
       <groupId>org.w3c.css</groupId>
@@ -273,7 +227,21 @@
             <phase>validate</phase>
             <configuration>
               <rules>
-                <dependencyConvergence />
+                <dependencyConvergence>
+                  <!-- The items listed below have been verified non issue for allowing. -->
+                  <excludes>
+                    <exclude>cglib:cglib</exclude>
+                    <exclude>commons-beanutils:commons-beanutils</exclude>
+                    <exclude>commons-logging:commons-logging</exclude>
+                    <exclude>com.google.guava:guava</exclude>
+                    <exclude>com.google.errorprone:error_prone_annotations</exclude>
+                    <exclude>org.codehaus.plexus:plexus-utils</exclude>
+                    <exclude>org.eclipse.platform:org.eclipse.equinox.common</exclude>
+                    <exclude>org.eclipse.platform:org.eclipse.core.runtime</exclude>
+                    <exclude>org.osgi:osgi.annotation</exclude>
+                    <exclude>org.osgi:org.osgi.util.function</exclude>
+                  </excludes>
+                </dependencyConvergence>
               </rules>
             </configuration>
           </execution>
@@ -283,14 +251,14 @@
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-dependency-plugin</artifactId>
         <configuration>
+          <!-- The items listed below have been verified required to override. -->
           <ignoredUnusedDeclaredDependencies>
-            <!-- ignore transitive dependency overridden to avoid vulnerability -->
+            <ignored>cglib:cglib</ignored>
             <ignore>commons-beanutils:commons-beanutils</ignore>
-            <!-- ignore alignment with commons-logging to support slf4j -->
             <ignore>commons-logging:commons-logging</ignore>
-            <!-- ignore unused osgi items added only for transitive dependency convergence-->
-            <ignore>org.osgi:org.osgi.util.function</ignore>
+            <!-- converge dependency with jsdt-core -->
             <ignore>org.osgi:osgi.annotation</ignore>
+            <ignore>org.ow2.asm:asm</ignore>
           </ignoredUnusedDeclaredDependencies>
         </configuration>
       </plugin>
